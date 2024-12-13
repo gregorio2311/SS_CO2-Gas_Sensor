@@ -1,31 +1,93 @@
 # SS_CO2-Gas_Sensor
-Prototipo con microprocesadores para la medición de Gas y CO2 en el ambiente
 
-Materiales:
+Prototipo basado en microprocesadores para la medición de gas y CO₂ en el ambiente. Este proyecto integra sensores, una pantalla TFT y un ESP32 para la lectura y visualización de datos.
 
-esp32-wroom:
-https://lastminuteengineers.com/esp32-pinout-reference/
-nota: esp32-wroom pin reference
+---
 
-SCD30:
-https://sensirion.com/products/catalog/SCD30
-nota: Incluye manuales de uso, ensamblaje, calibracion. 
+## **Materiales Necesarios**
 
-2.8 INCH TFT LCD Display:
-https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/
-nota: pin reference y conexion a esp32-wroom
+### **1. ESP32-WROOM**
+Microcontrolador principal del proyecto. Más información y referencia de pines disponible aquí:
+[ESP32-WROOM Pin Reference](https://lastminuteengineers.com/esp32-pinout-reference/)
 
-MQ-9 FC-22:
-https://www.pololu.com/file/0J314/MQ9.pdf
-nota: componente simple solo hay que conectar entrada analoga
+> **Nota:** Consultar el pinout para una correcta conexión con otros componentes.
 
-Ejemplo de conexion sensor-pantalla-esp32:
-https://www.14core.com/wiring-senserion-scd30-co2-sensor-in-esp32-tft-display/
-nota: Pantalla distinta, esp32-diagram mal, usar solo como soft_reference.
+---
 
-nota:faltan agregar las librerias necesarias para algunos componentes
-tft display(requiere modificar setup.h)
-esp32-wroom
-SCD30
+### **2. SCD30 (Sensor de CO₂)**
+Sensor de dióxido de carbono con alta precisión y funcionalidad avanzada. Incluye documentación sobre uso, ensamblaje y calibración:
+[Sensirion SCD30 Manual](https://sensirion.com/products/catalog/SCD30)
 
-estas pueden ser agregadas desde github o desde arduino
+> **Nota:** Asegúrate de seguir las instrucciones del manual para calibrar el sensor correctamente.
+
+---
+
+### **3. 2.8-INCH TFT LCD Display**
+Pantalla táctil para mostrar los valores medidos por los sensores. Información de conexión y pinout disponible aquí:
+[Interfacing 2.8-inch TFT LCD with ESP32](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
+
+> **Nota:** Verificar la referencia de pines y conexión específica al ESP32-WROOM.
+
+---
+
+### **4. MQ-9 (Sensor de gas)**
+Sensor analógico para detectar gases como monóxido de carbono. Es simple de conectar mediante entrada analógica. Consulta el manual aquí:
+[MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
+
+> **Nota:** Este componente no requiere configuración adicional, solo conectar su salida analógica al ESP32.
+
+---
+
+## **Ejemplo de Conexión**
+Consulta este ejemplo para una referencia sobre cómo conectar el sensor, la pantalla y el ESP32:
+[Ejemplo de conexión](https://www.14core.com/wiring-senserion-scd30-co2-sensor-in-esp32-tft-display/)
+
+> **Notas Importantes:**
+> - Este ejemplo utiliza una pantalla distinta. 
+> - El diagrama del ESP32 puede no ser completamente preciso; úsalo únicamente como referencia de software.
+
+---
+
+## **Librerías Necesarias**
+
+Algunos componentes requieren librerías adicionales que deben ser descargadas desde GitHub o Arduino:
+
+1. **TFT Display:**
+   - La librería requiere modificaciones en el archivo `setup.h`.
+   
+2. **ESP32-WROOM:**
+   - Asegúrate de tener instalada la librería oficial para programar el ESP32 en Arduino IDE.
+   
+3. **SCD30:**
+   - Descarga la librería correspondiente para interactuar con el sensor.
+
+> **Nota:** Verifica la instalación de las librerías antes de compilar el proyecto.
+
+---
+
+## **Pasos para Implementar**
+1. **Configura el ESP32-WROOM:**
+   - Conecta correctamente los pines de acuerdo con las referencias proporcionadas.
+   
+2. **Instala las Librerías Necesarias:**
+   - Descarga e instala las librerías desde los enlaces recomendados.
+   
+3. **Carga el Código en el ESP32:**
+   - Ajusta las configuraciones necesarias en el archivo `setup.h` para la pantalla TFT.
+   - Sube el código al ESP32 utilizando el Arduino IDE.
+
+4. **Calibra el SCD30:**
+   - Sigue las instrucciones del manual de calibración del sensor.
+
+5. **Verifica el Funcionamiento:**
+   - Asegúrate de que los datos del SCD30 y MQ-9 se muestran correctamente en la pantalla TFT.
+
+---
+
+## **Referencias**
+- [ESP32-WROOM Pin Reference](https://lastminuteengineers.com/esp32-pinout-reference/)
+- [SCD30 Manual](https://sensirion.com/products/catalog/SCD30)
+- [TFT LCD Pinout & Connection](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
+- [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
+
+---
