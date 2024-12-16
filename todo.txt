@@ -2,3 +2,4 @@ nota:faltan agregar las librerias necesarias para algunos componentes
 tft display(requiere modificar setup.h)
 esp32-wroom
 SCD30
+github prueba
