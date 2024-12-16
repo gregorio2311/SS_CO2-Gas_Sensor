@@ -17,6 +17,7 @@ Microcontrolador principal del proyecto. Más información y referencia de pines
 ### **2. SCD30 (Sensor de CO₂)**
 Sensor de dióxido de carbono con alta precisión y funcionalidad avanzada. Incluye documentación sobre uso, ensamblaje y calibración:
 [Sensirion SCD30 Manual](https://sensirion.com/products/catalog/SCD30)
+[SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
 
 > **Nota:** Asegúrate de seguir las instrucciones del manual para calibrar el sensor correctamente.
 
@@ -57,6 +58,7 @@ Algunos componentes requieren librerías adicionales que deben ser descargadas d
    
 2. **ESP32-WROOM:**
    - Asegúrate de tener instalada la librería oficial para programar el ESP32 en Arduino IDE.
+   - [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
    
 3. **SCD30:**
    - Descarga la librería correspondiente para interactuar con el sensor.
@@ -87,6 +89,7 @@ Algunos componentes requieren librerías adicionales que deben ser descargadas d
 ## **Referencias**
 - [ESP32-WROOM Pin Reference](https://lastminuteengineers.com/esp32-pinout-reference/)
 - [SCD30 Manual](https://sensirion.com/products/catalog/SCD30)
+- [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
 - [TFT LCD Pinout & Connection](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
 - [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
 

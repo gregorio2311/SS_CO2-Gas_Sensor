@@ -55,6 +55,28 @@ void loop() {
         return;
     }
 
+    // Force recalibration with a new CO2 reference concentration after 2 minutes
+    static unsigned long startTime = millis();
+    if (millis() - startTime > 120000) { // 2 minutes
+        uint16_t co2RefConcentration = 400; // Example reference concentration
+        if (sensor.forceRecalibration(co2RefConcentration) != NO_ERROR) {
+            Serial.println("Error forcing recalibration.");
+        }
+
+
+        // Get the current CO2 reference concentration
+        uint16_t currentRefConcentration;
+        if (sensor.getForceRecalibrationStatus(currentRefConcentration) != NO_ERROR) {
+            Serial.println("Error getting recalibration status.");
+        } else {
+            Serial.print("Current CO2 reference concentration: ");
+            Serial.println(currentRefConcentration);
+        }
+
+        // Reset start time to avoid repeated recalibration
+        startTime = millis();
+    }
+
     // Read data from MQ-9 sensor
     int mq9Value = analogRead(MQ9_PIN);
     float voltage = mq9Value * (3.3 / 4095.0); // Convert ADC value to voltage
