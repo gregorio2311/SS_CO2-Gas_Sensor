@@ -34,6 +34,9 @@ Pantalla táctil para mostrar los valores medidos por los sensores. Información
 ### **4. MQ-9 (Sensor de gas)**
 Sensor analógico para detectar gases como monóxido de carbono. Es simple de conectar mediante entrada analógica. Consulta el manual aquí:
 [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
+[MQ-9 Datasheet](https://www.electronicoscaldas.com/datasheet/MQ-9_Hanwei.pdf?srsltid=AfmBOoqJuYeODnqje9ZiwBc63UbbHD0YJeurQ5MU0pAK_PhJCSdb5fEC)
+[Otros sensores y caracteristicas](https://www.luisllamas.es/arduino-detector-gas-mq/)
+[calibracion](https://electropeak.com/learn/how-to-calibrate-and-use-mq9-gas-sensor-w-arduino/)
 
 > **Nota:** Este componente no requiere configuración adicional, solo conectar su salida analógica al ESP32.
 
@@ -92,5 +95,6 @@ Algunos componentes requieren librerías adicionales que deben ser descargadas d
 - [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
 - [TFT LCD Pinout & Connection](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
 - [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
-
+- [Módulo de alimentación para protoboard](https://www.steren.com.mx/modulo-de-alimentacion-para-protoboard.html)
+- [LM317]
 ---

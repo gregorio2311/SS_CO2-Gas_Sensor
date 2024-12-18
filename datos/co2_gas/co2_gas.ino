@@ -10,6 +10,8 @@ TFT_eSPI tft = TFT_eSPI();
 
 #define TFT_GREY 0x5AEB
 #define MQ9_PIN 33 // Pin analógico para el MQ-9
+#define RL 10000 // Resistencia de carga en ohmios (RL)
+#define Ro 10000.0 // Valor calibrado de Ro en aire limpio (ajústalo experimentalmente)
 
 void setup() {
     // Initialize Serial Monitor
@@ -40,8 +42,22 @@ void setup() {
 
     // Draw static screen layout
     tft.setCursor(10, 10);
-    tft.println("CO2 Monitor");
+    tft.println("Ambiente");
     tft.drawLine(0, 40, 240, 40, TFT_GREY);
+
+}
+
+float calculateRS(int analogValue) {
+    float VRL = analogValue * (5.0 / 1023.0); // Convertir lectura a voltaje
+    float RS = ((5.0 / VRL) - 1) * RL; // Calcular resistencia del sensor
+    return RS;
+}
+
+float calculateConcentration(float RS) {
+    float ratio = RS / Ro; // Relación Rs/Ro
+    // Calcular ppm con la curva del datasheet para gas combustible
+    float ppm = pow(10, ((log10(ratio) - 0.3) / -0.6)); // Relación logarítmica (simplificada)
+    return ppm;
 }
 
 void loop() {
@@ -58,7 +74,7 @@ void loop() {
     // Force recalibration with a new CO2 reference concentration after 2 minutes
     static unsigned long startTime = millis();
     if (millis() - startTime > 120000) { // 2 minutes
-        uint16_t co2RefConcentration = 400; // Example reference concentration
+        uint16_t co2RefConcentration = 450; // Example reference concentration
         if (sensor.forceRecalibration(co2RefConcentration) != NO_ERROR) {
             Serial.println("Error forcing recalibration.");
         }
@@ -78,17 +94,18 @@ void loop() {
     }
 
     // Read data from MQ-9 sensor
-    int mq9Value = analogRead(MQ9_PIN);
-    float voltage = mq9Value * (3.3 / 4095.0); // Convert ADC value to voltage
-    float gasConcentration = map(mq9Value, 0, 4095, 0, 1000); // Example: Map to a range (e.g., 0-1000 ppm)
+    int sensorValue = analogRead(MQ9_PIN);
+    float RS = calculateRS(sensorValue); // Calcular resistencia del sensor
+    float concentration = calculateConcentration(RS); // Calcular concentración de gas
 
     // Print values to Serial Monitor
     Serial.print("CO2: "); Serial.print(co2); Serial.print(" ppm\t");
     Serial.print("Temp: "); Serial.print(temperature); Serial.print(" C\t");
     Serial.print("Humidity: "); Serial.print(humidity); Serial.println(" %");
-    Serial.print("MQ-9 Analog Value: "); Serial.print(mq9Value);
-    Serial.print(" Voltage: "); Serial.print(voltage, 2);
-    Serial.print(" Gas Concentration: "); Serial.print(gasConcentration); Serial.println(" ppm");
+    Serial.print("MQ-9 Analog Value: "); Serial.print(sensorValue);
+    Serial.print(" Rs: "); Serial.print(RS);
+    Serial.print(" ohm | Concentración de Gas: "); Serial.print(concentration);
+    Serial.println(" ppm");
 
     // Update TFT display with sensor data
     tft.fillRect(10, 50, 220, 200, TFT_BLACK); // Clear previous data
@@ -105,7 +122,7 @@ void loop() {
 
     // MQ-9 data
     tft.setCursor(10, 180);
-    tft.printf("Gas: %.1f ppm", gasConcentration);
+    tft.printf("CH4 / Gas LP: %.1f ppm", concentration);
 
     delay(1500); // Wait before updating again
 }
