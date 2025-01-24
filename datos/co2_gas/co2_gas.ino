@@ -11,7 +11,7 @@ TFT_eSPI tft = TFT_eSPI();
 #define TFT_GREY 0x5AEB
 #define MQ9_PIN 33 // Pin analógico para el MQ-9
 #define RL 10000 // Resistencia de carga en ohmios (RL)
-#define Ro 10000.0 // Valor calibrado de Ro en aire limpio (ajústalo experimentalmente)
+#define Ro 931.0 // Valor calibrado de Ro en aire limpio (ajústalo experimentalmente)
 
 void setup() {
     // Initialize Serial Monitor
@@ -105,7 +105,6 @@ void loop() {
     Serial.print("MQ-9 Analog Value: "); Serial.print(sensorValue);
     Serial.print(" Rs: "); Serial.print(RS);
     Serial.print(" ohm | Concentración de Gas: "); Serial.print(concentration);
-    Serial.println(" ppm");
 
     // Update TFT display with sensor data
     tft.fillRect(10, 50, 220, 200, TFT_BLACK); // Clear previous data

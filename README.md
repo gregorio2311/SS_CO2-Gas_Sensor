@@ -95,6 +95,6 @@ Algunos componentes requieren librerías adicionales que deben ser descargadas d
 - [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
 - [TFT LCD Pinout & Connection](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
 - [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
-- [Módulo de alimentación para protoboard](https://www.steren.com.mx/modulo-de-alimentacion-para-protoboard.html)
+- [Módulo de alimentación para protoboard](https://www.electronicadiy.com/products/modulo-de-alimentacion-para-protoboard-3-3v-5v-usb)
 - [LM317]
 ---
