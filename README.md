@@ -10,8 +10,6 @@ Prototipo basado en microprocesadores para la medición de gas y CO₂ en el amb
 Microcontrolador principal del proyecto. Más información y referencia de pines disponible aquí:
 [ESP32-WROOM Pin Reference](https://lastminuteengineers.com/esp32-pinout-reference/)
 
-> **Nota:** Consultar el pinout para una correcta conexión con otros componentes.
-
 ---
 
 ### **2. SCD30 (Sensor de CO₂)**
@@ -19,15 +17,11 @@ Sensor de dióxido de carbono con alta precisión y funcionalidad avanzada. Incl
 [Sensirion SCD30 Manual](https://sensirion.com/products/catalog/SCD30)
 [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
 
-> **Nota:** Asegúrate de seguir las instrucciones del manual para calibrar el sensor correctamente.
-
 ---
 
 ### **3. 2.8-INCH TFT LCD Display**
 Pantalla táctil para mostrar los valores medidos por los sensores. Información de conexión y pinout disponible aquí:
 [Interfacing 2.8-inch TFT LCD with ESP32](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
-
-> **Nota:** Verificar la referencia de pines y conexión específica al ESP32-WROOM.
 
 ---
 
@@ -37,8 +31,6 @@ Sensor analógico para detectar gases como monóxido de carbono. Es simple de co
 [MQ-9 Datasheet](https://www.electronicoscaldas.com/datasheet/MQ-9_Hanwei.pdf?srsltid=AfmBOoqJuYeODnqje9ZiwBc63UbbHD0YJeurQ5MU0pAK_PhJCSdb5fEC)
 [Otros sensores y caracteristicas](https://www.luisllamas.es/arduino-detector-gas-mq/)
 [calibracion](https://electropeak.com/learn/how-to-calibrate-and-use-mq9-gas-sensor-w-arduino/)
-
-> **Nota:** Este componente no requiere configuración adicional, solo conectar su salida analógica al ESP32.
 
 ---
 
@@ -54,19 +46,24 @@ Consulta este ejemplo para una referencia sobre cómo conectar el sensor, la pan
 
 ## **Librerías Necesarias**
 
-Algunos componentes requieren librerías adicionales que deben ser descargadas desde GitHub o Arduino:
-
-1. **TFT Display:**
+1. **TFT_eSPI:**
    - La librería requiere modificaciones en el archivo `setup.h`.
+   - by bodmer
    
-2. **ESP32-WROOM:**
-   - Asegúrate de tener instalada la librería oficial para programar el ESP32 en Arduino IDE.
-   - [SCD30 Libreria](https://github.com/Sensirion/arduino-i2c-scd30/tree/master/pinouts)
+2. **Sensirion I2C SCD30:**
+   - by sensirion.
    
-3. **SCD30:**
-   - Descarga la librería correspondiente para interactuar con el sensor.
+3. **Sensirion Core:**
+   - by sensirion.
 
-> **Nota:** Verifica la instalación de las librerías antes de compilar el proyecto.
+4. **ArduinoHttpClient:**
+   - by arduino.
+
+5. **Arduino_ESP32_OTA:**
+   - by arduino.
+
+6. **PubSubClient:**
+   - by Nick O’Leary.
 
 ---
 
@@ -96,5 +93,5 @@ Algunos componentes requieren librerías adicionales que deben ser descargadas d
 - [TFT LCD Pinout & Connection](https://electropeak.com/learn/interfacing-2-8-inch-tft-lcd-touch-screen-with-esp32/)
 - [MQ-9 Datasheet](https://www.pololu.com/file/0J314/MQ9.pdf)
 - [Módulo de alimentación para protoboard](https://www.electronicadiy.com/products/modulo-de-alimentacion-para-protoboard-3-3v-5v-usb)
-- [LM317]
+- [Tutorial conexion HiveMQ](https://www.youtube.com/watch?v=IQu67UkoNQ4&t=1281s)
 ---
