@@ -25,6 +25,7 @@ void iniciarSensorSCD30() {
     sensor.softReset();
     delay(2000);
     sensor.startPeriodicMeasurement(0);
+    sensor.forceRecalibration(535);
 }
 
 bool leerSensorSCD30(float &co2, float &temp, float &hum) {

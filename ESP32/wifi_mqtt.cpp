@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
+#include <ArduinoJson.h>
 
 WiFiClientSecure espClient;
 PubSubClient client(espClient);
@@ -31,12 +32,16 @@ void manejarMQTT() {
     client.loop();
 }
 
-void publicarDatosMQTT(float co2, float temp, float hum) {
-    client.publish(co2_topic, String(co2).c_str());
-    client.publish(temp_topic, String(temp).c_str());
-    client.publish(hum_topic, String(hum).c_str());
-}
+void publicarDatosMQTT(float co2, float temp, float hum, float gas) {
+    StaticJsonDocument<200> jsonDoc;
+    jsonDoc["CO2"] = co2;
+    jsonDoc["temperature"] = temp;
+    jsonDoc["humidity"] = hum;
+    jsonDoc["CH4"] = gas;
 
-void publicarGasMQTT(float gas) {
-    client.publish(gas_topic, String(gas).c_str());
+    char mensaje[256];
+    serializeJson(jsonDoc, mensaje); // Convertir JSON a String
+
+    client.publish("sensor/datos", mensaje); // 📡 Publicar en un solo tópico
+    Serial.println("📡 Datos enviados a MQTT: " + String(mensaje));
 }

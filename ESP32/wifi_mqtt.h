@@ -4,7 +4,7 @@
 void conectarWiFi();
 void configurarMQTT();
 void manejarMQTT();
-void publicarDatosMQTT(float co2, float temp, float hum);
-void publicarGasMQTT(float gas);
+void publicarDatosMQTT(float co2, float temp, float hum, float gas);
+/*void publicarGasMQTT(float gas);*/
 
 #endif

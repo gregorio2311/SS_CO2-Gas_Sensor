@@ -6,6 +6,7 @@ float leerSensorMQ9() {
     int sensorValue = analogRead(MQ9_PIN);
     float RS = calculateRS(sensorValue); // Calcular resistencia del sensor
     float concentration = calculateConcentration(RS); // Calcular concentración de gas
+    Serial.printf("RS: %.2f, RL: %.2f, Ro: %.2f \n", RS, RL, Ro);
     return concentration;
 }
 
@@ -21,3 +22,4 @@ float calculateConcentration(float RS) {
     float ppm = pow(10, ((log10(ratio) - 0.3) / -0.6)); // Relación logarítmica (simplificada)
     return ppm;
 }
+
