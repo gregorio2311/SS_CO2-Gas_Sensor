@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';  // Importar Timer
 import '../services/api_service.dart';
 import 'GraficasScreen.dart';
 
@@ -13,6 +14,7 @@ class SensoresScreen extends StatefulWidget {
 class _SensoresScreenState extends State<SensoresScreen> {
   final ApiService apiService = ApiService();
   late Future<List<dynamic>> sensores;
+  Timer? _timer;  // Declarar Timer
   
   String? timestampInicio;
   String? timestampFin;
@@ -24,23 +26,45 @@ class _SensoresScreenState extends State<SensoresScreen> {
   void initState() {
     super.initState();
     sensores = apiService.fetchSensores();
+    _iniciarActualizacionPeriodica();  // Iniciar actualización periódica
   }
 
-void aplicarFiltros() {
-  setState(() {
-    sensores = apiService.fetchSensores(
-      timestampInicio: timestampInicio,
-      timestampFin: timestampFin,
-      cantidad: (cantidad == null || cantidad! <= 0) ? null : cantidad, // ✅ Si es vacío, traer todos los datos
-      co2: co2,
-      ch4: ch4,
-      temperatura: temperatura,
-      humedad: humedad,
-    );
-    mostrarGraficas = false; // Resetear vista al aplicar filtros
-  });
-}
+  void _iniciarActualizacionPeriodica() {
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      setState(() {
+        sensores = apiService.fetchSensores(
+          timestampInicio: timestampInicio,
+          timestampFin: timestampFin,
+          cantidad: (cantidad == null || cantidad! <= 0) ? null : cantidad,
+          co2: co2,
+          ch4: ch4,
+          temperatura: temperatura,
+          humedad: humedad,
+        );
+      });
+    });
+  }
 
+  void aplicarFiltros() {
+    setState(() {
+      sensores = apiService.fetchSensores(
+        timestampInicio: timestampInicio,
+        timestampFin: timestampFin,
+        cantidad: (cantidad == null || cantidad! <= 0) ? null : cantidad, // ✅ Si es vacío, traer todos los datos
+        co2: co2,
+        ch4: ch4,
+        temperatura: temperatura,
+        humedad: humedad,
+      );
+      mostrarGraficas = false; // Resetear vista al aplicar filtros
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();  // Cancelar el timer al salir
+    super.dispose();
+  }
 
   Future<void> _seleccionarFechaHora(BuildContext context, bool esInicio) async {
     final DateTime? pickedDate = await showDatePicker(
