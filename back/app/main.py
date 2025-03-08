@@ -6,24 +6,29 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException, Query
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+from dotenv import load_dotenv
+import os
+
+# Cargar variables de entorno
+load_dotenv()
 
 app = FastAPI()
 
 # 🔹 Configuración de MongoDB
-MONGO_URI = "mongodb://localhost:27017"
-DB_NAME = "sensores_db"
-COLLECTION_NAME = "mediciones"
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
 client = AsyncIOMotorClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
 
 # 🔹 Configuración de HiveMQ Cloud
-MQTT_BROKER = "********.cloud.hivemq.com"
-MQTT_PORT = 8883
-MQTT_TOPIC = "****tu_topico"
-MQTT_USERNAME = "****tu_usuario"
-MQTT_PASSWORD = "****tu_password"
+MQTT_BROKER = os.getenv("MQTT_BROKER")
+MQTT_PORT = int(os.getenv("MQTT_PORT"))
+MQTT_TOPIC = os.getenv("MQTT_TOPIC")
+MQTT_USERNAME = os.getenv("MQTT_USERNAME")
+MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 
 # 🔹 Obtener el loop de FastAPI
 loop = asyncio.get_event_loop()
