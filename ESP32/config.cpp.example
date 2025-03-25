@@ -1,0 +1,14 @@
+// Configuración de WiFi
+const char* ssid = "your_wifi_ssid";
+const char* password = "your_wifi_password";
+
+// Configuración de MQTT
+const char* mqtt_server = "your_mqtt_server";
+const char* mqtt_username = "your_mqtt_username";
+const char* mqtt_password = "your_mqtt_password";
+const int mqtt_port = 1883;
+
+// Tópicos MQTT
+const char* mqtt_topic_co2 = "sensores/co2";
+const char* mqtt_topic_temperatura = "sensores/temperatura";
+const char* mqtt_topic_humedad = "sensores/humedad"; 

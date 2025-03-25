@@ -1,135 +1,78 @@
 import asyncio
-import paho.mqtt.client as mqtt
-import ssl
-import json
-from datetime import datetime
-from fastapi import FastAPI, HTTPException, Query
-from motor.motor_asyncio import AsyncIOMotorClient
-from bson import ObjectId
-from dotenv import load_dotenv
-import os
-
-# Cargar variables de entorno
-load_dotenv()
-
-app = FastAPI()
-
-# 🔹 Configuración de MongoDB
-MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME")
-COLLECTION_NAME = os.getenv("COLLECTION_NAME")
-
-client = AsyncIOMotorClient(MONGO_URI)
-db = client[DB_NAME]
-collection = db[COLLECTION_NAME]
-
-# 🔹 Configuración de HiveMQ Cloud
-MQTT_BROKER = os.getenv("MQTT_BROKER")
-MQTT_PORT = int(os.getenv("MQTT_PORT"))
-MQTT_TOPIC = os.getenv("MQTT_TOPIC")
-MQTT_USERNAME = os.getenv("MQTT_USERNAME")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
-
-# 🔹 Obtener el loop de FastAPI
-loop = asyncio.get_event_loop()
-
-# 🔹 Función asíncrona para guardar datos en MongoDB con timestamp
-async def save_to_mongo(data):
-    document = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "CO2": data.get("CO2"),
-        "temperature": data.get("temperature"),
-        "humidity": data.get("humidity"),
-        "CH4": data.get("CH4")
-    }
-    await collection.insert_one(document)
-    print(f"✅ Guardado en MongoDB: {document}")
-
-# 🔹 Callback MQTT para recibir mensajes
-def on_message(client, userdata, message):
-    try:
-        data = json.loads(message.payload.decode())
-        print(f"📥 Mensaje recibido en {message.topic}: {data}")
-
-        # Enviar la tarea al loop de FastAPI
-        future = asyncio.run_coroutine_threadsafe(save_to_mongo(data), loop)
-        future.result()  # Bloquea hasta que la tarea termine (previene errores)
-    except Exception as e:
-        print(f"⚠️ Error procesando mensaje: {e}")
-
-# 🔹 Configuración del Cliente MQTT con TLS
-mqtt_client = mqtt.Client()
-mqtt_client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
-mqtt_client.tls_set_context(ssl.create_default_context())
-
-mqtt_client.on_message = on_message
-
-# 🔹 Conectar y suscribirse al tópico
-
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("✅ Conectado exitosamente a HiveMQ Cloud")
-        client.subscribe(MQTT_TOPIC)
-        print(f"📡 Suscrito a: {MQTT_TOPIC}")
-    else:
-        print(f"⚠️ Error de conexión MQTT. Código: {rc}")
-
-mqtt_client.on_connect = on_connect
-mqtt_client.connect(MQTT_BROKER, MQTT_PORT, 60)
-mqtt_client.loop_start()  # Ejecutar MQTT en segundo plano
-
-# 🔹 Endpoint para obtener datos filtrados
-@app.get("/sensores/filtrar")
-async def get_sensores_filtrados(
-    timestamp_inicio: str = Query(None, description="Fecha inicio en formato ISO 8601"),
-    timestamp_fin: str = Query(None, description="Fecha fin en formato ISO 8601"),
-    cantidad: int = Query(None, description="Cantidad de datos a obtener"),
-    co2: bool = Query(True, description="Incluir datos de CO2"),
-    ch4: bool = Query(True, description="Incluir datos de CH4"),
-    temperatura: bool = Query(True, description="Incluir datos de temperatura"),
-    humedad: bool = Query(True, description="Incluir datos de humedad")
-):
-    try:
-        filtro = {}
-        
-        if timestamp_inicio and timestamp_fin:
-            filtro["timestamp"] = {"$gte": timestamp_inicio, "$lte": timestamp_fin}
-        
-        consulta = collection.find(filtro).sort("timestamp", -1)
-        
-        if cantidad:
-            consulta = consulta.limit(cantidad)
-        
-        datos = await consulta.to_list(None)
-        
-        for dato in datos:
-            dato["_id"] = str(dato["_id"])
-            if not co2:
-                dato.pop("CO2", None)
-            if not ch4:
-                dato.pop("CH4", None)
-            if not temperatura:
-                dato.pop("temperature", None)
-            if not humedad:
-                dato.pop("humidity", None)
-        
-        return {"data": datos}
-    except Exception as e:
-        print(f"⚠️ Error al obtener datos de MongoDB: {e}")
-        raise HTTPException(status_code=500, detail="Error al obtener datos de MongoDB")
-
-# 🔹 Endpoint para verificar que la API está corriendo
-@app.get("/")
-def read_root():
-    return {"message": "API MQTT conectada a MongoDB y HiveMQ Cloud"}
-
-
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from datetime import datetime
 
+from .config import API_TITLE, API_VERSION
+from .mqtt_handler import MQTTHandler
+from .dependencies import get_database
+from .routers import users, devices, sensors
+
+app = FastAPI(title=API_TITLE, version=API_VERSION)
+
+# Configuración CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir acceso desde cualquier origen
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos HTTP
-    allow_headers=["*"],  # Permitir todos los headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+# Montar archivos estáticos
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Variables globales
+mqtt_handler = None
+
+@app.on_event("startup")
+async def startup_event():
+    global mqtt_handler
+    
+    # Inicializar MongoDB
+    db = await get_database()
+    
+    # Crear índices
+    await db.users.create_index("email", unique=True)
+    await db.devices.create_index("owner_id")
+    await db.sensors.create_index("device_id")
+    
+    # Inicializar MQTT
+    loop = asyncio.get_event_loop()
+    mqtt_handler = MQTTHandler(
+        save_callback=lambda data: save_to_mongo(data),
+        loop=loop
+    )
+    mqtt_handler.connect()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    if mqtt_handler:
+        mqtt_handler.disconnect()
+
+# Incluir routers
+app.include_router(users.router)
+app.include_router(devices.router)
+app.include_router(sensors.router)
+
+# Función auxiliar para guardar datos en MongoDB
+async def save_to_mongo(data: dict):
+    db = await get_database()
+    document = {
+        "device_id": data.get("device_id"),
+        "sensor_id": data.get("sensor_id"),
+        "value": data.get("value"),
+        "unit": data.get("unit"),
+        "timestamp": datetime.utcnow()
+    }
+    await db.sensor_data.insert_one(document)
+    
+    # Notificar a través de WebSocket
+    if document["device_id"] in devices.active_connections:
+        message = WebSocketMessage(
+            type="sensor:data",
+            data=document
+        )
+        for connection in devices.active_connections[document["device_id"]]:
+            await connection.send_json(message.dict())

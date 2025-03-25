@@ -1,3 +1,51 @@
 .DS_Store
 todo.txt
 back/.env
+
+# Entornos virtuales
+venv/
+venv311/
+env/
+.env/
+
+# ESP32
+ESP32/config.cpp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+.pub-cache/
+.pub/
+/build/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

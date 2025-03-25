@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';  // Importar Timer
 import '../services/api_service.dart';
-import 'GraficasScreen.dart';
+import 'graficas_screen.dart';
 
 
 class SensoresScreen extends StatefulWidget {

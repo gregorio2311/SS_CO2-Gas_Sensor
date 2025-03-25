@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/DeviceCard.dart';
+import '../services/auth_service.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  final _authService = AuthService();
 
   final List<Widget> _screens = [
     const DevicesScreen(),
@@ -22,6 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _logout() async {
+    await _authService.logout();
+    if (!mounted) return;
+    
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +43,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Sistema de Monitoreo'),
         backgroundColor: Colors.blue.shade900,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+            tooltip: 'Cerrar sesión',
+          ),
+        ],
       ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -114,167 +135,245 @@ class _DevicesScreenState extends State<DevicesScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Dispositivos',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _showFilters = !_showFilters;
-                  });
-                },
-                icon: Icon(
-                  _showFilters ? Icons.filter_list_off : Icons.filter_list,
+  void _showBluetoothDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Conectar Dispositivo'),
+          content: Container(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.bluetooth_searching,
+                  size: 50,
                   color: Colors.blue.shade900,
                 ),
-                tooltip: 'Filtrar dispositivos',
-              ),
-            ],
-          ),
-        ),
-        if (_showFilters)
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey.shade100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Dispositivos:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                SizedBox(height: 16),
+                Text('Buscando dispositivos...'),
+                SizedBox(height: 16),
+                // Lista de ejemplo de dispositivos BT disponibles
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Icon(Icons.bluetooth),
+                        title: Text('Dispositivo BT ${index + 1}'),
+                        subtitle: Text('00:11:22:33:44:5${index}'),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            // Aquí irá la lógica de conexión
+                            Navigator.pop(context);
+                          },
+                          child: Text('Conectar'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade900,
+                            foregroundColor: Colors.white,
                           ),
-                          const SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            constraints: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.3,
-                            ),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _availableDevices.length,
-                              itemBuilder: (context, index) {
-                                final device = _availableDevices[index];
-                                return CheckboxListTile(
-                                  title: Text(device),
-                                  value: _selectedDevices.contains(device),
-                                  onChanged: (bool? selected) {
-                                    if (selected != null) {
-                                      _toggleDevice(device);
-                                    }
-                                  },
-                                  activeColor: Colors.blue.shade900,
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Sensores:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            constraints: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.3,
-                            ),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _availableSensors.length,
-                              itemBuilder: (context, index) {
-                                final sensor = _availableSensors[index];
-                                return CheckboxListTile(
-                                  title: Text(sensor),
-                                  value: _selectedSensors.contains(sensor),
-                                  onChanged: (bool? selected) {
-                                    if (selected != null) {
-                                      _toggleSensor(sensor);
-                                    }
-                                  },
-                                  activeColor: Colors.blue.shade900,
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _applyFilters,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade900,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text('Aplicar Filtros'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _clearFilters,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        child: const Text('Limpiar'),
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ),
-        const Expanded(
-          child: DevicesList(),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancelar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.white,
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Dispositivos',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _showFilters = !_showFilters;
+                      });
+                    },
+                    icon: Icon(
+                      _showFilters ? Icons.filter_list_off : Icons.filter_list,
+                      color: Colors.blue.shade900,
+                    ),
+                    tooltip: 'Filtrar dispositivos',
+                  ),
+                ],
+              ),
+            ),
+            if (_showFilters)
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.grey.shade100,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Dispositivos:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.grey.shade300),
+                                ),
+                                constraints: BoxConstraints(
+                                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _availableDevices.length,
+                                  itemBuilder: (context, index) {
+                                    final device = _availableDevices[index];
+                                    return CheckboxListTile(
+                                      title: Text(device),
+                                      value: _selectedDevices.contains(device),
+                                      onChanged: (bool? selected) {
+                                        if (selected != null) {
+                                          _toggleDevice(device);
+                                        }
+                                      },
+                                      activeColor: Colors.blue.shade900,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Sensores:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.grey.shade300),
+                                ),
+                                constraints: BoxConstraints(
+                                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _availableSensors.length,
+                                  itemBuilder: (context, index) {
+                                    final sensor = _availableSensors[index];
+                                    return CheckboxListTile(
+                                      title: Text(sensor),
+                                      value: _selectedSensors.contains(sensor),
+                                      onChanged: (bool? selected) {
+                                        if (selected != null) {
+                                          _toggleSensor(sensor);
+                                        }
+                                      },
+                                      activeColor: Colors.blue.shade900,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _applyFilters,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue.shade900,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text('Aplicar Filtros'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: _clearFilters,
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text('Limpiar'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            const Expanded(
+              child: DevicesList(),
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: _showBluetoothDialog,
+            backgroundColor: Colors.blue.shade900,
+            child: Icon(Icons.bluetooth_audio, color: Colors.white),
+            tooltip: 'Agregar dispositivo Bluetooth',
+          ),
         ),
       ],
     );

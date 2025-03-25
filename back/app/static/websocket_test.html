@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba de WebSocket</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #messages {
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow-y: auto;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .received {
+            background-color: #e3f2fd;
+            margin-right: 20%;
+        }
+        .sent {
+            background-color: #f5f5f5;
+            margin-left: 20%;
+        }
+        .status {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Prueba de WebSocket</h1>
+    
+    <div>
+        <label for="deviceId">ID del Dispositivo:</label>
+        <input type="text" id="deviceId" value="">
+        <button onclick="connect()">Conectar</button>
+        <button onclick="disconnect()">Desconectar</button>
+    </div>
+
+    <div>
+        <label for="token">Token JWT:</label>
+        <input type="text" id="token" value="" style="width: 300px;">
+    </div>
+
+    <div id="messages"></div>
+
+    <div>
+        <input type="text" id="messageInput" placeholder="Escribe un mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        let ws = null;
+        const messagesDiv = document.getElementById('messages');
+
+        function addMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}`;
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function connect() {
+            const deviceId = document.getElementById('deviceId').value;
+            const token = document.getElementById('token').value;
+            
+            if (!deviceId || !token) {
+                alert('Por favor ingresa el ID del dispositivo y el token');
+                return;
+            }
+
+            ws = new WebSocket(`ws://localhost:8000/ws/${deviceId}`);
+            
+            ws.onopen = () => {
+                addMessage('Conectado al WebSocket', 'status');
+                // Enviar el token como primer mensaje
+                ws.send(JSON.stringify({ type: 'auth', token: token }));
+            };
+
+            ws.onclose = () => {
+                addMessage('Desconectado del WebSocket', 'status');
+            };
+
+            ws.onerror = (error) => {
+                addMessage(`Error: ${error.message}`, 'status');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                addMessage(`Recibido: ${JSON.stringify(data)}`, 'received');
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function sendMessage() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                alert('No hay conexión WebSocket activa');
+                return;
+            }
+
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            
+            if (message) {
+                ws.send(JSON.stringify({ type: 'message', content: message }));
+                addMessage(`Enviado: ${message}`, 'sent');
+                messageInput.value = '';
+            }
+        }
+
+        // Permitir enviar mensaje con Enter
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html> 
