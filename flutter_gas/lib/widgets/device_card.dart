@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'DeviceConfigDialog.dart';
+import 'device_config_dialog.dart';
 
 class DeviceCard extends StatefulWidget {
   final String deviceName;

@@ -6,8 +6,10 @@ import 'graficas_screen.dart';
 
 
 class SensoresScreen extends StatefulWidget {
+  const SensoresScreen({super.key});
+
   @override
-  _SensoresScreenState createState() => _SensoresScreenState();
+  State<SensoresScreen> createState() => _SensoresScreenState();
 }
 
 class _SensoresScreenState extends State<SensoresScreen> {
@@ -29,7 +31,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
   }
 
   void _iniciarActualizacionPeriodica() {
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       setState(() {
         sensores = apiService.fetchSensores(
           timestampInicio: timestampInicio,
@@ -66,6 +68,8 @@ class _SensoresScreenState extends State<SensoresScreen> {
   }
 
   Future<void> _seleccionarFechaHora(BuildContext context, bool esInicio) async {
+    if (!mounted) return;
+
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -73,18 +77,20 @@ class _SensoresScreenState extends State<SensoresScreen> {
       lastDate: DateTime(2030),
     );
 
-    if (pickedDate == null) return;
+    if (pickedDate == null || !mounted) return;
 
     int hora = TimeOfDay.now().hour;
     int minuto = TimeOfDay.now().minute;
     int segundo = 0;
     int milisegundo = 0;
 
-    bool? resultado = await showDialog(
+    if (!context.mounted) return;
+
+    bool? resultado = await showDialog<bool>(
       context: context,
-      builder: (context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text("Seleccionar Hora Completa"),
+          title: const Text("Seleccionar Hora Completa"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -129,7 +135,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
                   SizedBox(
                     width: 70,
                     child: TextField(
-                      decoration: InputDecoration(labelText: "ms"),
+                      decoration: const InputDecoration(labelText: "ms"),
                       keyboardType: TextInputType.number,
                       onChanged: (value) {
                         setState(() {
@@ -145,11 +151,11 @@ class _SensoresScreenState extends State<SensoresScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text("Cancelar"),
+              child: const Text("Cancelar"),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text("Aceptar"),
+              child: const Text("Aceptar"),
             ),
           ],
         );
@@ -181,7 +187,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Filtrar Sensores")),
+      appBar: AppBar(title: const Text("Filtrar Sensores")),
       body: Column(
         children: [
           Padding(
@@ -196,7 +202,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
                         child: Text(timestampInicio ?? "Desde"),
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () => _seleccionarFechaHora(context, false),
@@ -205,9 +211,9 @@ class _SensoresScreenState extends State<SensoresScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Cantidad de datos",
                     border: OutlineInputBorder(),
                   ),
@@ -221,18 +227,18 @@ class _SensoresScreenState extends State<SensoresScreen> {
                 Row(
                   children: [
                     Checkbox(value: co2, onChanged: (value) => setState(() => co2 = value!)),
-                    Text("CO₂"),
+                    const Text("CO₂"),
                     Checkbox(value: ch4, onChanged: (value) => setState(() => ch4 = value!)),
-                    Text("CH₄"),
+                    const Text("CH₄"),
                     Checkbox(value: temperatura, onChanged: (value) => setState(() => temperatura = value!)),
-                    Text("Temp"),
+                    const Text("Temp"),
                     Checkbox(value: humedad, onChanged: (value) => setState(() => humedad = value!)),
-                    Text("Humedad"),
+                    const Text("Humedad"),
                   ],
                 ),
                 ElevatedButton(
                   onPressed: aplicarFiltros,
-                  child: Text("Aplicar Filtros"),
+                  child: const Text("Aplicar Filtros"),
                 ),
                 ElevatedButton(
                   onPressed: () => setState(() => mostrarGraficas = !mostrarGraficas),
@@ -245,7 +251,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
             child: FutureBuilder<List<dynamic>>(
               future: sensores,
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
                 final datos = snapshot.data!;
                 return Row(
@@ -262,7 +268,7 @@ class _SensoresScreenState extends State<SensoresScreen> {
                             elevation: 2,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             child: ListTile(
-                              title: Text(sensor['timestamp'], style: TextStyle(fontWeight: FontWeight.bold)),
+                              title: Text(sensor['timestamp'], style: const TextStyle(fontWeight: FontWeight.bold)),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

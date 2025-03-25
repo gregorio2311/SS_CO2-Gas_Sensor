@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/DeviceCard.dart';
+import '../widgets/device_card.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 
@@ -15,8 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final _authService = AuthService();
 
   final List<Widget> _screens = [
-    const DevicesScreen(),
     const DataVisualizationScreen(),
+    const DevicesScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -55,12 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.devices),
-            label: 'Dispositivos',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
             label: 'Visualización',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.devices),
+            label: 'Dispositivos',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -140,8 +140,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Conectar Dispositivo'),
-          content: Container(
+          title: const Text('Conectar Dispositivo'),
+          content: SizedBox(
             width: double.maxFinite,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -151,9 +151,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   size: 50,
                   color: Colors.blue.shade900,
                 ),
-                SizedBox(height: 16),
-                Text('Buscando dispositivos...'),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+                const Text('Buscando dispositivos...'),
+                const SizedBox(height: 16),
                 // Lista de ejemplo de dispositivos BT disponibles
                 Container(
                   decoration: BoxDecoration(
@@ -165,19 +165,19 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     itemCount: 3,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        leading: Icon(Icons.bluetooth),
+                        leading: const Icon(Icons.bluetooth),
                         title: Text('Dispositivo BT ${index + 1}'),
-                        subtitle: Text('00:11:22:33:44:5${index}'),
+                        subtitle: Text('00:11:22:33:44:5$index'),
                         trailing: ElevatedButton(
                           onPressed: () {
                             // Aquí irá la lógica de conexión
                             Navigator.pop(context);
                           },
-                          child: Text('Conectar'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue.shade900,
                             foregroundColor: Colors.white,
                           ),
+                          child: const Text('Conectar'),
                         ),
                       );
                     },
@@ -191,7 +191,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
             ),
           ],
         );
@@ -371,8 +371,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
           child: FloatingActionButton(
             onPressed: _showBluetoothDialog,
             backgroundColor: Colors.blue.shade900,
-            child: Icon(Icons.bluetooth_audio, color: Colors.white),
             tooltip: 'Agregar dispositivo Bluetooth',
+            child: const Icon(Icons.bluetooth_audio, color: Colors.white),
           ),
         ),
       ],
@@ -781,18 +781,18 @@ class _DataVisualizationScreenState extends State<DataVisualizationScreen> {
                           ],
                         ),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.analytics,
                                 size: 60,
                                 color: Colors.blue,
                               ),
-                              const SizedBox(height: 16),
-                              const Text(
+                              SizedBox(height: 16),
+                              Text(
                                 'Gráfica en desarrollo',
                                 style: TextStyle(
                                   fontSize: 16,

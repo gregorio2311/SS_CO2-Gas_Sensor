@@ -19,7 +19,6 @@ class DeviceConfigDialog extends StatefulWidget {
 class _DeviceConfigDialogState extends State<DeviceConfigDialog> {
   late TextEditingController _nameController;
   late TextEditingController _locationController;
-  bool _isExpanded = false;
 
   @override
   void initState() {

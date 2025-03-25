@@ -84,11 +84,12 @@
      "code": "number"
    }
    ```
-4. Los endpoints de tiempo real (WebSocket) son preferibles para:
+4. Los endpoints de tiempo real (WebSocket) son para:
    - Datos de sensores en tiempo real
    - Estados de conexión de dispositivos
    - Progreso de calibración
-5. Los endpoints REST son preferibles para:
+   
+5. Los endpoints REST son para:
    - Operaciones CRUD
    - Configuraciones
    - Gestión de permisos

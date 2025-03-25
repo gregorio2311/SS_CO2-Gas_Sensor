@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 class GraficasScreen extends StatelessWidget {
   final List<dynamic> datos;
 
-  GraficasScreen({required this.datos});
+  const GraficasScreen({super.key, required this.datos});
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +36,18 @@ class GraficasScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(titulo, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
+              Text(titulo, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
               SizedBox(
                 height: 250, // ✅ Aumentar altura para evitar overflow
                 child: LineChart(
                   LineChartData(
-                    titlesData: FlTitlesData(
+                    titlesData: const FlTitlesData(
                       leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
                       bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     ),
                     borderData: FlBorderData(show: true),
-                    gridData: FlGridData(show: false),
+                    gridData: const FlGridData(show: false),
                     lineBarsData: keys.map((key) {
                       return LineChartBarData(
                         spots: _generarPuntos(datos, key),
